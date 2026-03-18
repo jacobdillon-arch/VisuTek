@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VisuTek — Powderverse Pant</title>
+
+<!-- #15: OG / Social meta -->
+<meta name="description" content="Powderverse Pant — 3L waterproof shell pant built for backcountry skiing. Explore in immersive 3D.">
+<meta property="og:title" content="VisuTek — Powderverse Pant">
+<meta property="og:description" content="3L waterproof shell pant. Explore in immersive 3D with interactive hotspots, fit checker, and 360° rotation.">
+<meta property="og:type" content="product">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   RESET & VARIABLES
+   ═══════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Earth Tonal — Split: dark viewer / warm light panel */
+  --white: #f5f1eb;
+  --black: #2c2a22;
+  --grey-50: #f0ece2;
+  --grey-100: #e8e4d8;
+  --grey-200: #d4d0c4;
+  --grey-300: #b8b4a6;
+  --grey-400: #908c7e;
+  --grey-500: #6e6a5c;
+  --grey-600: #524e42;
+  --grey-700: #3e3a2e;
+  --grey-800: #2c2a22;
+  --grey-900: #1e1c16;
+
+  /* Viewer dark surface */
+  --viewer-bg: #262420;
+  --viewer-surface: #302e28;
+  --viewer-border: rgba(255,248,235,0.08);
+  --viewer-text: #c8c4b6;
+  --viewer-text-dim: #7a7668;
+
+  /* Accent palette */
+  --saddle: #9e7b4f;
+  --saddle-hover: #b8915d;
+  --sage: #7a8c6e;
+  --sage-dim: #5e6d54;
+  --red: #a34b3a;
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --border: 0.5px solid var(--grey-200);
+  --border-dark: 0.5px solid var(--grey-300);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { font-family: var(--font-body); color: var(--black); background: var(--white); overflow-x: hidden; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+input, select { font-family: inherit; border: none; outline: none; }
+:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+
+/* #4: Hide number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+/* #7: Custom scrollbar */
+.product-panel::-webkit-scrollbar { width: 4px; }
+.product-panel::-webkit-scrollbar-track { background: transparent; }
+.product-panel::-webkit-scrollbar-thumb { background: var(--grey-300); }
+.product-panel::-webkit-scrollbar-thumb:hover { background: var(--grey-400); }
+.product-panel { scrollbar-width: thin; scrollbar-color: var(--grey-300) transparent; }
+
+/* ═══════════════════════════════════════════
+   TOPBAR — #8: taller + backdrop blur
+   ═══════════════════════════════════════════ */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  background: rgba(38,36,32,0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--viewer-border);
+}
+.topbar-logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--grey-100);
+  text-decoration: none;
+}
+.topbar-logo span { color: var(--viewer-text-dim); font-size: 11px; letter-spacing: 1px; margin-left: 8px; font-family: var(--font-mono); }
+.topbar-nav { display: flex; gap: 24px; align-items: center; }
+.topbar-nav a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--viewer-text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.topbar-nav a:hover { color: var(--grey-100); }
+.cart-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--saddle);
+  color: var(--white);
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0;
+  transition: transform 0.3s var(--ease-spring);
+}
+.cart-count.bump { transform: scale(1.3); }
+
+/* ═══════════════════════════════════════════
+   MAIN LAYOUT
+   ═══════════════════════════════════════════ */
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  min-height: 100vh;
+  padding-top: 52px;
+}
+
+/* ═══════════════════════════════════════════
+   LEFT: VIEWER
+   ═══════════════════════════════════════════ */
+.viewer-section {
+  position: relative;
+  background: var(--viewer-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-tabs {
+  display: flex;
+  border-bottom: 0.5px solid var(--viewer-border);
+  background: var(--viewer-surface);
+}
+.viewer-tab {
+  flex: 1;
+  padding: 14px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--viewer-text-dim);
+  text-align: center;
+  border-right: 0.5px solid var(--viewer-border);
+  transition: all 0.3s var(--ease-out);
+  position: relative;
+}
+.viewer-tab:last-child { border-right: none; }
+.viewer-tab.active { color: var(--grey-100); background: var(--viewer-bg); }
+.viewer-tab.active::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--saddle);
+}
+.viewer-tab:hover { color: var(--viewer-text); }
+
+.viewer-canvas-wrap {
+  flex: 1;
+  position: relative;
+  min-height: 500px;
+  overflow: hidden;
+}
+
+#viewer-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+
+.viewer-canvas-wrap::after {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.12) 100%);
+}
+
+/* #12: Tab panel transitions */
+.viewer-panel {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+.viewer-panel.active { display: flex; opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   DRAG HINT OVERLAY
+   ═══════════════════════════════════════════ */
+.drag-hint {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 15; pointer-events: none;
+  opacity: 1; transition: opacity 0.6s var(--ease-out);
+}
+.drag-hint.hidden { opacity: 0; }
+.drag-hint-icon {
+  width: 48px; height: 48px;
+  border: 1px solid var(--viewer-border);
+  background: rgba(38,36,32,0.85);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+  animation: dragHintSway 2.5s ease-in-out infinite;
+}
+.drag-hint-icon svg { width: 22px; height: 22px; }
+.drag-hint-text {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--viewer-text);
+  background: rgba(38,36,32,0.85); padding: 6px 14px;
+}
+@keyframes dragHintSway {
+  0%, 100% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+}
+
+/* ═══════════════════════════════════════════
+   HOTSPOTS
+   ═══════════════════════════════════════════ */
+.hotspot-layer { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+
+.hotspot {
+  position: absolute; pointer-events: all; cursor: pointer;
+  transform: translate(-50%, -50%); z-index: 11;
+}
+
+.hotspot-dot {
+  width: 28px; height: 28px;
+  border: 1.5px solid rgba(255,248,235,0.6);
+  background: rgba(38,36,32,0.7);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s var(--ease-out); position: relative;
+}
+.hotspot-dot::before {
+  content: ''; width: 6px; height: 6px; background: var(--saddle);
+  transition: transform 0.3s var(--ease-spring);
+}
+.hotspot:hover .hotspot-dot { background: var(--saddle); border-color: var(--saddle); }
+.hotspot:hover .hotspot-dot::before { background: var(--white); transform: scale(1.3); }
+
+.hotspot-dot .hotspot-pulse {
+  position: absolute; inset: -4px;
+  border: 1px solid rgba(255,248,235,0.4); opacity: 0;
+  animation: pulse 2.5s infinite var(--ease-out);
+}
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.hotspot-label {
+  position: absolute; left: 36px; top: 50%; transform: translateY(-50%);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--viewer-text); white-space: nowrap;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  background: rgba(38,36,32,0.85); padding: 3px 8px;
+}
+.hotspot:hover .hotspot-label { opacity: 1; }
+
+/* #1: Hotspot info panel — can flip direction */
+.hotspot-info {
+  position: absolute; top: 50%;
+  transform: translateY(-50%) translateX(8px);
+  width: 290px; background: var(--white);
+  border: 0.5px solid var(--grey-200); padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: all 0.35s var(--ease-out);
+  z-index: 20; box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  left: 44px; right: auto;
+}
+.hotspot-info.visible {
+  opacity: 1; pointer-events: all;
+  transform: translateY(-50%) translateX(0);
+}
+.hotspot-info.flip-left {
+  left: auto; right: 44px;
+}
+.hotspot-info.flip-up {
+  top: auto; bottom: 50%;
+  transform: translateY(50%) translateX(0);
+}
+.hotspot-info-eyebrow {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--grey-400); margin-bottom: 4px;
+}
+.hotspot-info-title {
+  font-family: var(--font-display); font-size: 20px;
+  letter-spacing: 1.5px; margin-bottom: 8px;
+}
+.hotspot-info-desc {
+  font-size: 12px; line-height: 1.65; color: var(--grey-600); margin-bottom: 14px;
+}
+.hotspot-info-specs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  padding-top: 14px; border-top: var(--border);
+}
+.hotspot-spec-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--grey-400); margin-bottom: 2px;
+}
+.hotspot-spec-value { font-family: var(--font-mono); font-size: 11px; color: var(--black); }
+.hotspot-ratings { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.hotspot-rating { display: flex; align-items: center; gap: 8px; }
+.rating-bar-track { flex: 1; height: 3px; background: var(--grey-200); position: relative; }
+.rating-bar-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: var(--saddle); transition: width 0.6s var(--ease-out);
+}
+.rating-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--grey-500); min-width: 80px;
+}
+.rating-value {
+  font-family: var(--font-mono); font-size: 10px; color: var(--black);
+  min-width: 24px; text-align: right;
+}
+.hotspot-info-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 14px;
+  color: var(--grey-400); cursor: pointer; transition: color 0.2s;
+}
+.hotspot-info-close:hover { color: var(--black); }
+
+.hotspot-sustainability {
+  margin-top: 12px; padding-top: 10px; border-top: var(--border);
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.hotspot-sust-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--grey-500); padding: 4px 8px; border: var(--border);
+}
+.hotspot-sust-badge::before { content: '\25CF'; font-size: 6px; color: var(--sage); }
+
+/* ═══════════════════════════════════════════
+   STILL VIEW
+   ═══════════════════════════════════════════ */
+.still-view-panel { display: none; flex: 1; flex-direction: column; background: var(--viewer-bg); opacity: 0; transition: opacity 0.3s var(--ease-out); }
+.still-view-panel.active { display: flex; opacity: 1; }
+.still-view-header { padding: 24px 32px; background: var(--viewer-surface); border-bottom: 0.5px solid var(--viewer-border); }
+.still-view-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 1.5px; margin-bottom: 4px; color: var(--grey-100); }
+.still-view-sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--viewer-text-dim); text-transform: uppercase; }
+.still-angles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; flex: 1; padding: 2px; }
+.still-angle-card {
+  background: var(--viewer-surface); border: 0.5px solid var(--viewer-border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s var(--ease-out);
+  position: relative; overflow: hidden; padding: 32px 16px;
+}
+.still-angle-card:hover { background: rgba(255,248,235,0.04); }
+.still-angle-card.active { background: rgba(255,248,235,0.04); }
+.still-angle-card.active::after {
+  content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
+  height: 2px; background: var(--saddle);
+}
+.still-angle-icon {
+  width: 52px; height: 52px; border: 0.5px solid var(--viewer-border);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px; transition: border-color 0.2s;
+}
+.still-angle-card:hover .still-angle-icon { border-color: var(--viewer-text-dim); }
+.still-angle-icon svg { width: 20px; height: 20px; stroke: var(--viewer-text-dim); fill: none; stroke-width: 1.5; }
+.still-angle-name { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--viewer-text); margin-bottom: 4px; }
+.still-angle-desc { font-family: var(--font-mono); font-size: 9px; color: var(--viewer-text-dim); text-align: center; }
+
+/* ═══════════════════════════════════════════
+   FIT CHECK PANEL
+   ═══════════════════════════════════════════ */
+.fit-check-panel { display: none; flex: 1; flex-direction: row; background: var(--white); overflow: hidden; opacity: 0; transition: opacity 0.3s var(--ease-out); }
+.fit-check-panel.active { display: flex; opacity: 1; }
+.fit-inputs { width: 280px; border-right: var(--border); padding: 28px 24px; overflow-y: auto; }
+.fit-section-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 1.5px; margin-bottom: 4px; }
+.fit-section-sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--grey-400); text-transform: uppercase; margin-bottom: 12px; }
+
+.fit-how-to { margin-bottom: 20px; }
+.fit-how-to-toggle {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px;
+  color: var(--grey-500); text-transform: uppercase; cursor: pointer;
+  padding: 8px 0; transition: color 0.2s;
+}
+.fit-how-to-toggle:hover { color: var(--black); }
+.fit-how-to-toggle svg { width: 12px; height: 12px; transition: transform 0.3s var(--ease-out); }
+.fit-how-to-toggle.open svg { transform: rotate(180deg); }
+.fit-how-to-content { max-height: 0; overflow: hidden; transition: max-height 0.4s var(--ease-out); }
+.fit-how-to-content.open { max-height: 300px; }
+.fit-how-to-list { padding: 8px 0 12px; font-size: 11px; line-height: 1.7; color: var(--grey-600); }
+.fit-how-to-list dt { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3px; color: var(--black); margin-top: 6px; }
+.fit-how-to-list dd { margin-left: 0; color: var(--grey-500); font-size: 11px; }
+
+.fit-input-group { margin-bottom: 14px; }
+.fit-input-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--grey-500); margin-bottom: 6px; display: block; }
+.fit-input-row { display: flex; border: var(--border-dark); transition: border-color 0.2s; }
+.fit-input-row:focus-within { border-color: var(--black); }
+.fit-input-row.error { border-color: var(--red); }
+.fit-input-field { flex: 1; padding: 10px 12px; font-family: var(--font-mono); font-size: 13px; color: var(--black); background: var(--white); }
+.fit-input-field::placeholder { color: var(--grey-300); }
+.fit-input-unit { padding: 10px 12px; font-family: var(--font-mono); font-size: 10px; color: var(--grey-400); background: var(--grey-100); display: flex; align-items: center; border-left: var(--border); }
+
+/* #2: Inline validation error */
+.fit-error {
+  font-family: var(--font-mono); font-size: 10px; color: var(--red);
+  letter-spacing: 0.3px; margin-top: 6px; margin-bottom: 8px;
+  opacity: 0; max-height: 0; overflow: hidden;
+  transition: all 0.3s var(--ease-out);
+}
+.fit-error.visible { opacity: 1; max-height: 30px; }
+
+.fit-run-btn {
+  width: 100%; padding: 14px;
+  background: var(--saddle); color: var(--white);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-top: 20px; transition: all 0.2s;
+}
+.fit-run-btn:hover { background: var(--saddle-hover); }
+.fit-run-btn.analyzing { background: var(--grey-500); pointer-events: none; }
+
+.fit-body-map {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px; background: var(--grey-100); position: relative;
+}
+
+.fit-legend { display: none; gap: 12px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+.fit-legend.visible { display: flex; }
+.fit-legend-item { display: flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--grey-500); }
+.fit-legend-dot { width: 8px; height: 8px; }
+
+.fit-verdict { margin-top: 20px; text-align: center; opacity: 0; transform: translateY(8px); transition: all 0.5s var(--ease-out); }
+.fit-verdict.visible { opacity: 1; transform: translateY(0); }
+.fit-verdict-size { font-family: var(--font-display); font-size: 52px; letter-spacing: 2px; line-height: 1; }
+.fit-verdict-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--grey-500); margin-top: 4px; }
+.fit-verdict-note { font-size: 12px; color: var(--grey-500); margin-top: 8px; max-width: 220px; line-height: 1.5; }
+
+/* ═══════════════════════════════════════════
+   RIGHT PANEL
+   ═══════════════════════════════════════════ */
+.product-panel {
+  border-left: var(--border); display: flex; flex-direction: column;
+  overflow-y: auto; background: var(--white);
+}
+.product-header { padding: 32px 32px 0; }
+.breadcrumb { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--grey-400); margin-bottom: 24px; }
+.breadcrumb a { color: var(--grey-400); text-decoration: none; transition: color 0.2s; }
+.breadcrumb a:hover { color: var(--black); }
+.breadcrumb span { margin: 0 6px; }
+.product-brand { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey-500); margin-bottom: 8px; }
+.product-name { font-family: var(--font-display); font-size: 44px; letter-spacing: 2px; line-height: 0.92; margin-bottom: 12px; }
+.product-tagline { font-size: 14px; color: var(--grey-500); line-height: 1.55; margin-bottom: 20px; max-width: 360px; }
+.product-price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 28px; padding-bottom: 28px; border-bottom: var(--border); }
+.product-price { font-family: var(--font-display); font-size: 34px; letter-spacing: 1px; }
+.product-price-note { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--grey-400); text-transform: uppercase; }
+
+.selector-section { padding: 0 32px; margin-bottom: 24px; }
+.selector-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--grey-500); margin-bottom: 10px; display: flex; justify-content: space-between; }
+.selector-label-value { color: var(--black); }
+.color-options { display: flex; gap: 8px; }
+
+/* #11: Color swatch with tooltip */
+.color-swatch {
+  width: 36px; height: 36px; border: var(--border);
+  cursor: pointer; transition: all 0.2s; position: relative;
+}
+.color-swatch.active { border: 1.5px solid var(--black); }
+.color-swatch:hover { border-color: var(--grey-400); }
+.color-swatch::after {
+  content: attr(data-color);
+  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.3px;
+  color: var(--grey-500); white-space: nowrap;
+  opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+.color-swatch:hover::after { opacity: 1; }
+
+.size-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+/* #3: Size guide link opens fit tab */
+.size-guide-link {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px;
+  color: var(--grey-400); text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer; transition: color 0.2s;
+}
+.size-guide-link:hover { color: var(--black); }
+.size-options { display: flex; gap: 6px; }
+.size-btn {
+  width: 48px; height: 40px; border: var(--border-dark);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.5px;
+  color: var(--grey-600); display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.size-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
+.size-btn:hover:not(.active) { border-color: var(--saddle); color: var(--black); }
+
+.spec-grid {
+  padding: 0 32px; margin-bottom: 24px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: var(--border);
+}
+.spec-cell { padding: 14px 0; border-bottom: var(--border); }
+.spec-cell:nth-child(odd) { padding-right: 14px; border-right: var(--border); }
+.spec-cell:nth-child(even) { padding-left: 14px; }
+.spec-cell-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--grey-400); margin-bottom: 3px; }
+.spec-cell-value { font-family: var(--font-mono); font-size: 12px; color: var(--black); }
+
+/* #10: Editorial section with background tint */
+.editorial-section { padding: 0 32px; margin-bottom: 28px; }
+.editorial-border-top {
+  border-top: var(--border); padding: 24px;
+  background: var(--grey-50); margin: 0 -32px; padding-left: 32px; padding-right: 32px;
+}
+.editorial-eyebrow { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey-400); margin-bottom: 10px; }
+.editorial-headline { font-family: var(--font-display); font-size: 24px; letter-spacing: 1px; line-height: 1.05; margin-bottom: 12px; }
+.editorial-body { font-size: 13px; line-height: 1.65; color: var(--grey-600); }
+.editorial-body em { font-style: italic; color: var(--grey-500); }
+
+.sust-strip { margin: 0 32px 28px; border: var(--border); padding: 18px; }
+.sust-strip-title { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--grey-400); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.sust-strip-title::before { content: '\25CF'; font-size: 6px; color: var(--sage); }
+.sust-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.sust-tag { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3px; color: var(--grey-600); padding: 5px 10px; background: var(--grey-100); }
+.sust-tag::before { content: '\25C6'; font-size: 5px; color: var(--sage); }
+
+.cta-wrap { margin-top: auto; padding: 20px 32px; border-top: var(--border); background: var(--white); position: sticky; bottom: 0; }
+.cta-btn {
+  width: 100%; padding: 16px; background: var(--saddle); color: var(--white);
+  font-family: var(--font-display); font-size: 18px; letter-spacing: 3px;
+  text-transform: uppercase; transition: all 0.3s var(--ease-out);
+  position: relative; overflow: hidden;
+}
+.cta-btn:hover { background: var(--saddle-hover); }
+.cta-btn.added { background: var(--sage); letter-spacing: 2px; }
+/* #9: CTA sub styling */
+.cta-sub {
+  text-align: center; margin-top: 10px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--grey-400);
+  display: flex; justify-content: center; gap: 6px;
+}
+.cta-sub-item { transition: color 0.2s; cursor: default; }
+.cta-sub-item:hover { color: var(--grey-600); }
+.cta-sub-sep { color: var(--grey-300); }
+
+/* ═══════════════════════════════════════════
+   VIEWER STATUS BAR
+   ═══════════════════════════════════════════ */
+.viewer-status {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 20px; background: var(--viewer-surface); border-top: 0.5px solid var(--viewer-border);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--viewer-text-dim);
+}
+.viewer-status-left { display: flex; align-items: center; gap: 4px; }
+.viewer-status-dot { width: 6px; height: 6px; background: var(--sage); display: inline-block; margin-right: 2px; transition: background 0.3s; }
+.viewer-status-dot.active { background: var(--saddle); }
+.viewer-controls { display: flex; gap: 16px; }
+.viewer-control-btn { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--viewer-text-dim); text-transform: uppercase; transition: color 0.2s; }
+.viewer-control-btn:hover { color: var(--grey-100); }
+
+/* ═══════════════════════════════════════════
+   LOADING OVERLAY
+   ═══════════════════════════════════════════ */
+.loading-overlay {
+  position: absolute; inset: 0; background: var(--viewer-bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 50; transition: opacity 0.5s var(--ease-out);
+}
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-bar-track { width: 120px; height: 2px; background: var(--viewer-surface); margin-bottom: 12px; overflow: hidden; }
+.loading-bar-fill { height: 100%; background: var(--saddle); width: 0%; transition: width 0.3s; }
+.loading-text { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--viewer-text-dim); }
+
+/* ═══════════════════════════════════════════
+   SCROLL REVEAL
+   ═══════════════════════════════════════════ */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.06s; }
+.reveal-d2 { transition-delay: 0.12s; }
+.reveal-d3 { transition-delay: 0.18s; }
+.reveal-d4 { transition-delay: 0.24s; }
+.reveal-d5 { transition-delay: 0.30s; }
+.reveal-d6 { transition-delay: 0.36s; }
+.reveal-d7 { transition-delay: 0.42s; }
+
+/* ═══════════════════════════════════════════
+   MOBILE
+   ═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .main-container { grid-template-columns: 1fr; }
+  .viewer-section { min-height: 55vh; }
+  .viewer-canvas-wrap { min-height: 360px; }
+  .product-panel { border-left: none; border-top: var(--border); }
+  .product-name { font-size: 34px; }
+  .hotspot-info { width: 230px; padding: 16px; }
+  .fit-check-panel { flex-direction: column; }
+  .fit-inputs { width: 100%; border-right: none; border-bottom: var(--border); padding: 20px; }
+  .fit-body-map { min-height: 300px; }
+  .product-header, .selector-section, .spec-grid { padding-left: 24px; padding-right: 24px; }
+  .editorial-section { padding: 0 24px; }
+  .editorial-border-top { margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+  .sust-strip { margin-left: 24px; margin-right: 24px; }
+  .cta-wrap { padding: 20px 24px; }
+}
+
+@media (max-width: 480px) {
+  .topbar { padding: 0 16px; }
+  .topbar-logo span { display: none; }
+  .topbar-nav a:not(:last-child) { display: none; }
+  .product-header, .selector-section, .spec-grid { padding-left: 20px; padding-right: 20px; }
+  .editorial-section { padding: 0 20px; }
+  .editorial-border-top { margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
+  .sust-strip { margin-left: 20px; margin-right: 20px; }
+  .cta-wrap { padding: 16px 20px; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; box-shadow: 0 -1px 0 var(--grey-200); }
+  .product-panel { padding-bottom: 80px; }
+  .viewer-canvas-wrap { min-height: 300px; }
+  .still-angles { grid-template-columns: repeat(2, 1fr); }
+  .product-name { font-size: 30px; }
+  .color-swatch::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<header class="topbar">
+  <a class="topbar-logo" href="#">VISUTEK <span>WebAR</span></a>
+  <nav class="topbar-nav">
+    <a href="#">Collection</a>
+    <a href="#">Tech</a>
+    <a href="#">About</a>
+    <div class="cart-count" id="cart-count">0</div>
+  </nav>
+</header>
+
+<div class="main-container">
+
+  <!-- LEFT: VIEWER -->
+  <section class="viewer-section">
+    <div class="viewer-tabs">
+      <button class="viewer-tab active" data-tab="spin">3D Spin</button>
+      <button class="viewer-tab" data-tab="still">Still View</button>
+      <button class="viewer-tab" data-tab="fit">Fit Check</button>
+    </div>
+
+    <!-- 3D SPIN -->
+    <div class="viewer-panel active" id="panel-spin">
+      <div class="viewer-canvas-wrap">
+        <canvas id="viewer-canvas" tabindex="0" aria-label="3D product viewer. Drag to rotate, scroll to zoom, arrow keys to rotate."></canvas>
+
+        <div class="loading-overlay" id="loading-overlay">
+          <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar"></div></div>
+          <div class="loading-text" id="loading-text">Initializing</div>
+        </div>
+
+        <div class="drag-hint" id="drag-hint">
+          <div class="drag-hint-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#b8b4a6" stroke-width="1.5"><path d="M5 12h14M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3"/></svg>
+          </div>
+          <div class="drag-hint-text">Drag to rotate &#183; Scroll to zoom</div>
+        </div>
+
+        <div class="hotspot-layer" id="hotspot-layer">
+          <!-- H1: Waistband -->
+          <div class="hotspot" style="left:50%;top:20%;" data-hotspot="0">
+            <div class="hotspot-dot"><div class="hotspot-pulse"></div></div>
+            <div class="hotspot-label">Waistband System</div>
+            <div class="hotspot-info" id="info-0">
+              <div class="hotspot-info-close">&#215;</div>
+              <div class="hotspot-info-eyebrow">Feature 01</div>
+              <div class="hotspot-info-title">WAISTBAND SYSTEM</div>
+              <div class="hotspot-info-desc">Dual-adjust elastic waistband with internal drawcord. Low-profile hook closure sits flat under harness or pack belt.</div>
+              <div class="hotspot-info-specs"><div class="hotspot-spec-item"><div class="hotspot-spec-label">Closure</div><div class="hotspot-spec-value">Hook + Drawcord</div></div><div class="hotspot-spec-item"><div class="hotspot-spec-label">Rise</div><div class="hotspot-spec-value">Mid-Rise</div></div></div>
+              <div class="hotspot-ratings"><div class="hotspot-rating"><div class="rating-label">Comfort</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:92%"></div></div><div class="rating-value">9.2</div></div><div class="hotspot-rating"><div class="rating-label">Adjustability</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:88%"></div></div><div class="rating-value">8.8</div></div></div>
+            </div>
+          </div>
+          <!-- H2: Thigh -->
+          <div class="hotspot" style="left:36%;top:36%;" data-hotspot="1">
+            <div class="hotspot-dot"><div class="hotspot-pulse"></div></div>
+            <div class="hotspot-label">Thigh Venting</div>
+            <div class="hotspot-info" id="info-1">
+              <div class="hotspot-info-close">&#215;</div>
+              <div class="hotspot-info-eyebrow">Feature 02</div>
+              <div class="hotspot-info-title">THIGH VENTING</div>
+              <div class="hotspot-info-desc">Dual-length thigh vents with mesh backing. Full zip opening dumps heat fast during high-output skinning or bootpacking.</div>
+              <div class="hotspot-info-specs"><div class="hotspot-spec-item"><div class="hotspot-spec-label">Vent Length</div><div class="hotspot-spec-value">14" dual zip</div></div><div class="hotspot-spec-item"><div class="hotspot-spec-label">Backing</div><div class="hotspot-spec-value">Mesh liner</div></div></div>
+              <div class="hotspot-ratings"><div class="hotspot-rating"><div class="rating-label">Breathability</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:88%"></div></div><div class="rating-value">8.8</div></div><div class="hotspot-rating"><div class="rating-label">Ease of Use</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:84%"></div></div><div class="rating-value">8.4</div></div></div>
+              <div class="hotspot-sustainability"><div class="hotspot-sust-badge">Recycled Mesh</div></div>
+            </div>
+          </div>
+          <!-- H3: Knee -->
+          <div class="hotspot" style="left:70%;top:46%;" data-hotspot="2">
+            <div class="hotspot-dot"><div class="hotspot-pulse"></div></div>
+            <div class="hotspot-label">Knee Articulation</div>
+            <div class="hotspot-info" id="info-2">
+              <div class="hotspot-info-close">&#215;</div>
+              <div class="hotspot-info-eyebrow">Feature 03</div>
+              <div class="hotspot-info-title">KNEE ARTICULATION</div>
+              <div class="hotspot-info-desc">Pre-curved anatomical knee with gusseted construction. Movement-mapped patterning from motion capture of skiing biomechanics.</div>
+              <div class="hotspot-info-specs"><div class="hotspot-spec-item"><div class="hotspot-spec-label">Pattern</div><div class="hotspot-spec-value">3D Articulated</div></div><div class="hotspot-spec-item"><div class="hotspot-spec-label">Flex Range</div><div class="hotspot-spec-value">180&#176;</div></div></div>
+              <div class="hotspot-ratings"><div class="hotspot-rating"><div class="rating-label">Mobility</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:95%"></div></div><div class="rating-value">9.5</div></div><div class="hotspot-rating"><div class="rating-label">Durability</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:91%"></div></div><div class="rating-value">9.1</div></div></div>
+              <div class="hotspot-sustainability"><div class="hotspot-sust-badge">Bluesign&#174; Approved</div></div>
+            </div>
+          </div>
+          <!-- H4: Lower Leg -->
+          <div class="hotspot" style="left:40%;top:72%;" data-hotspot="3">
+            <div class="hotspot-dot"><div class="hotspot-pulse"></div></div>
+            <div class="hotspot-label">Reinforced Lower</div>
+            <div class="hotspot-info" id="info-3">
+              <div class="hotspot-info-close">&#215;</div>
+              <div class="hotspot-info-eyebrow">Feature 04</div>
+              <div class="hotspot-info-title">REINFORCED LOWER LEG</div>
+              <div class="hotspot-info-desc">Scuff-resistant Cordura&#174; panel on inner lower leg. Withstands edge contact and crampon abrasion across multi-day tours.</div>
+              <div class="hotspot-info-specs"><div class="hotspot-spec-item"><div class="hotspot-spec-label">Material</div><div class="hotspot-spec-value">Cordura&#174; 500D</div></div><div class="hotspot-spec-item"><div class="hotspot-spec-label">Abrasion</div><div class="hotspot-spec-value">Class 4</div></div></div>
+              <div class="hotspot-ratings"><div class="hotspot-rating"><div class="rating-label">Durability</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:96%"></div></div><div class="rating-value">9.6</div></div><div class="hotspot-rating"><div class="rating-label">Weight</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:72%"></div></div><div class="rating-value">7.2</div></div></div>
+            </div>
+          </div>
+          <!-- H5: Gaiter -->
+          <div class="hotspot" style="left:54%;top:88%;" data-hotspot="4">
+            <div class="hotspot-dot"><div class="hotspot-pulse"></div></div>
+            <div class="hotspot-label">Integrated Gaiter</div>
+            <div class="hotspot-info" id="info-4">
+              <div class="hotspot-info-close">&#215;</div>
+              <div class="hotspot-info-eyebrow">Feature 05</div>
+              <div class="hotspot-info-title">INTEGRATED GAITER</div>
+              <div class="hotspot-info-desc">Internal snow gaiter with gripper elastic seals to boot. Boot-hook lace clip prevents ride-up. Compatible with all alpine and touring boots.</div>
+              <div class="hotspot-info-specs"><div class="hotspot-spec-item"><div class="hotspot-spec-label">Seal Type</div><div class="hotspot-spec-value">Gripper elastic</div></div><div class="hotspot-spec-item"><div class="hotspot-spec-label">Boot Hook</div><div class="hotspot-spec-value">Universal clip</div></div></div>
+              <div class="hotspot-ratings"><div class="hotspot-rating"><div class="rating-label">Snow Seal</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:90%"></div></div><div class="rating-value">9.0</div></div><div class="hotspot-rating"><div class="rating-label">Compatibility</div><div class="rating-bar-track"><div class="rating-bar-fill" style="width:94%"></div></div><div class="rating-value">9.4</div></div></div>
+              <div class="hotspot-sustainability"><div class="hotspot-sust-badge">PFC-Free DWR</div><div class="hotspot-sust-badge">Recycled Elastic</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="viewer-status">
+        <div class="viewer-status-left"><span class="viewer-status-dot" id="status-dot"></span><span id="status-text">Initializing</span></div>
+        <div class="viewer-controls">
+          <button class="viewer-control-btn" id="btn-reset">Reset View</button>
+          <button class="viewer-control-btn" id="btn-autospin">Pause Spin</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STILL VIEW -->
+    <div class="still-view-panel" id="panel-still">
+      <div class="still-view-header"><div class="still-view-title">CAMERA ANGLES</div><div class="still-view-sub">Select an angle to snap the 3D viewer</div></div>
+      <div class="still-angles">
+        <div class="still-angle-card active" data-angle="front"><div class="still-angle-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="0"/></svg></div><div class="still-angle-name">Front</div><div class="still-angle-desc">Full frontal view</div></div>
+        <div class="still-angle-card" data-angle="back"><div class="still-angle-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="0" stroke-dasharray="3 2"/></svg></div><div class="still-angle-name">Back</div><div class="still-angle-desc">Rear panel detail</div></div>
+        <div class="still-angle-card" data-angle="side"><div class="still-angle-icon"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="20" rx="0"/></svg></div><div class="still-angle-name">Side</div><div class="still-angle-desc">Profile silhouette</div></div>
+        <div class="still-angle-card" data-angle="detail-knee"><div class="still-angle-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div><div class="still-angle-name">Knee</div><div class="still-angle-desc">Articulation close-up</div></div>
+        <div class="still-angle-card" data-angle="detail-cuff"><div class="still-angle-icon"><svg viewBox="0 0 24 24"><path d="M6 18 L18 18 L16 6 L8 6 Z"/></svg></div><div class="still-angle-name">Cuff</div><div class="still-angle-desc">Gaiter system</div></div>
+        <div class="still-angle-card" data-angle="flat-lay"><div class="still-angle-icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="0"/></svg></div><div class="still-angle-name">Top</div><div class="still-angle-desc">Overhead angle</div></div>
+      </div>
+    </div>
+
+    <!-- FIT CHECK -->
+    <div class="fit-check-panel" id="panel-fit">
+      <div class="fit-inputs">
+        <div class="fit-section-title">FIT FINDER</div>
+        <div class="fit-section-sub">Enter your measurements</div>
+        <div class="fit-how-to">
+          <div class="fit-how-to-toggle" id="how-to-toggle"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5 L6 7.5 L9 4.5"/></svg>How to measure</div>
+          <div class="fit-how-to-content" id="how-to-content"><dl class="fit-how-to-list"><dt>Waist</dt><dd>Around natural waistline, just above hip bones</dd><dt>Hips</dt><dd>Widest point around hips and glutes</dd><dt>Inseam</dt><dd>Inside of leg from crotch seam to ankle bone</dd><dt>Thigh</dt><dd>Widest part of thigh, just below crotch</dd></dl></div>
+        </div>
+        <div class="fit-input-group"><label class="fit-input-label">Waist</label><div class="fit-input-row" id="row-waist"><input type="number" class="fit-input-field" id="fit-waist" placeholder="32" min="24" max="48"><div class="fit-input-unit">IN</div></div></div>
+        <div class="fit-input-group"><label class="fit-input-label">Hips</label><div class="fit-input-row" id="row-hips"><input type="number" class="fit-input-field" id="fit-hips" placeholder="36" min="28" max="52"><div class="fit-input-unit">IN</div></div></div>
+        <div class="fit-input-group"><label class="fit-input-label">Inseam</label><div class="fit-input-row" id="row-inseam"><input type="number" class="fit-input-field" id="fit-inseam" placeholder="32" min="26" max="38"><div class="fit-input-unit">IN</div></div></div>
+        <div class="fit-input-group"><label class="fit-input-label">Thigh</label><div class="fit-input-row" id="row-thigh"><input type="number" class="fit-input-field" id="fit-thigh" placeholder="22" min="16" max="32"><div class="fit-input-unit">IN</div></div></div>
+        <!-- #2: Inline error -->
+        <div class="fit-error" id="fit-error">Please enter all four measurements</div>
+        <button class="fit-run-btn" id="fit-run">Analyze Fit</button>
+      </div>
+
+      <div class="fit-body-map">
+        <!-- #14: Enhanced body map with dimension lines -->
+        <svg id="body-svg" width="180" height="380" viewBox="0 0 180 380">
+          <defs>
+            <marker id="arr" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4" fill="none" stroke="#908c7e" stroke-width="0.8"/></marker>
+          </defs>
+          <g fill="none" stroke-width="1.5">
+            <path id="bm-waist" d="M50,40 L130,40 L135,55 L45,55 Z" stroke="#b8b4a6" fill="#e8e4d8" style="transition:all 0.5s ease"/>
+            <path id="bm-hips" d="M45,55 L135,55 L140,110 L40,110 Z" stroke="#b8b4a6" fill="#e8e4d8" style="transition:all 0.5s ease"/>
+            <path id="bm-thigh-l" d="M40,110 L88,110 L82,230 L34,230 Z" stroke="#b8b4a6" fill="#e8e4d8" style="transition:all 0.5s ease"/>
+            <path id="bm-thigh-r" d="M92,110 L140,110 L146,230 L98,230 Z" stroke="#b8b4a6" fill="#e8e4d8" style="transition:all 0.5s ease"/>
+            <path id="bm-lower-l" d="M34,230 L82,230 L78,350 L30,350 Z" stroke="#b8b4a6" fill="#e8e4d8" style="transition:all 0.5s ease"/>
+            <path id="bm-lower-r" d="M98,230 L146,230 L150,350 L102,350 Z" stroke="#b8b4a6" fill="#e8e4d8" style="transition:all 0.5s ease"/>
+          </g>
+          <!-- Dimension lines -->
+          <line x1="50" y1="47" x2="130" y2="47" stroke="#908c7e" stroke-width="0.5" stroke-dasharray="2 2" marker-start="url(#arr)" marker-end="url(#arr)"/>
+          <line x1="40" y1="82" x2="140" y2="82" stroke="#908c7e" stroke-width="0.5" stroke-dasharray="2 2" marker-start="url(#arr)" marker-end="url(#arr)"/>
+          <line x1="16" y1="110" x2="16" y2="350" stroke="#908c7e" stroke-width="0.5" stroke-dasharray="2 2" marker-start="url(#arr)" marker-end="url(#arr)"/>
+          <line x1="40" y1="125" x2="88" y2="125" stroke="#908c7e" stroke-width="0.5" stroke-dasharray="2 2" marker-start="url(#arr)" marker-end="url(#arr)"/>
+          <!-- Labels -->
+          <text x="90" y="43" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#908c7e">WAIST</text>
+          <text x="90" y="78" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#908c7e">HIPS</text>
+          <text x="64" y="121" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#908c7e">THIGH</text>
+          <text x="12" y="232" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#908c7e" transform="rotate(-90 12 232)">INSEAM</text>
+        </svg>
+
+        <div class="fit-legend" id="fit-legend">
+          <div class="fit-legend-item"><div class="fit-legend-dot" style="background:#2d6a3f;"></div> Ideal</div>
+          <div class="fit-legend-item"><div class="fit-legend-dot" style="background:#5a8f4a;"></div> Good</div>
+          <div class="fit-legend-item"><div class="fit-legend-dot" style="background:#c4842d;"></div> Snug</div>
+          <div class="fit-legend-item"><div class="fit-legend-dot" style="background:#a33b2e;"></div> Tight</div>
+        </div>
+        <div class="fit-verdict" id="fit-verdict">
+          <div class="fit-verdict-size" id="fit-size">M</div>
+          <div class="fit-verdict-label">Recommended Size</div>
+          <div class="fit-verdict-note" id="fit-note"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT PANEL -->
+  <aside class="product-panel" id="product-panel">
+    <div class="product-header">
+      <div class="breadcrumb reveal"><a href="#">Home</a><span>/</span><a href="#">Bottoms</a><span>/</span><a href="#">Shell Pants</a></div>
+      <div class="product-brand reveal reveal-d1">Outdoor Research</div>
+      <div class="product-name reveal reveal-d2">POWDERVERSE<br>PANT</div>
+      <div class="product-tagline reveal reveal-d3">3L waterproof shell pant. Built for backcountry skiing with full-length side zips, articulated knees, and integrated gaiters.</div>
+      <div class="product-price-row reveal reveal-d4"><div class="product-price">$349</div><div class="product-price-note">Free shipping over $100</div></div>
+    </div>
+
+    <div class="selector-section reveal reveal-d5">
+      <div class="selector-label"><span>Color</span><span class="selector-label-value" id="color-name">Black</span></div>
+      <div class="color-options">
+        <div class="color-swatch active" style="background:#0a0a0a;" data-color="Black"></div>
+        <div class="color-swatch" style="background:#2d3a4a;" data-color="Naval Blue"></div>
+        <div class="color-swatch" style="background:#5c5c5c;" data-color="Pewter"></div>
+        <div class="color-swatch" style="background:#8b4513;" data-color="Saddle"></div>
+      </div>
+    </div>
+
+    <div class="selector-section reveal reveal-d5">
+      <div class="size-row">
+        <div class="selector-label" style="margin-bottom:0;"><span>Size</span><span class="selector-label-value" id="size-name">M</span></div>
+        <span class="size-guide-link" id="size-guide-link">Size Guide</span>
+      </div>
+      <div style="height:10px;"></div>
+      <div class="size-options">
+        <button class="size-btn" data-size="XS">XS</button>
+        <button class="size-btn" data-size="S">S</button>
+        <button class="size-btn active" data-size="M">M</button>
+        <button class="size-btn" data-size="L">L</button>
+        <button class="size-btn" data-size="XL">XL</button>
+        <button class="size-btn" data-size="XXL">XXL</button>
+      </div>
+    </div>
+
+    <div class="spec-grid reveal reveal-d6">
+      <div class="spec-cell"><div class="spec-cell-label">Waterproof</div><div class="spec-cell-value">20,000mm</div></div>
+      <div class="spec-cell"><div class="spec-cell-label">Breathability</div><div class="spec-cell-value">25,000g/m&#178;</div></div>
+      <div class="spec-cell"><div class="spec-cell-label">Weight</div><div class="spec-cell-value">480g / 16.9oz</div></div>
+      <div class="spec-cell"><div class="spec-cell-label">Fit</div><div class="spec-cell-value">Athletic</div></div>
+      <div class="spec-cell"><div class="spec-cell-label">Shell</div><div class="spec-cell-value">3L AscentShell&#8482;</div></div>
+      <div class="spec-cell"><div class="spec-cell-label">Seams</div><div class="spec-cell-value">Fully taped</div></div>
+    </div>
+
+    <div class="editorial-section reveal reveal-d6">
+      <div class="editorial-border-top">
+        <div class="editorial-eyebrow">Why We Built This</div>
+        <div class="editorial-headline">ENGINEERED FOR THE<br>LINE YOU DIDN'T PLAN</div>
+        <div class="editorial-body">The Powderverse started in the Wasatch backcountry &#8212; long skin tracks, variable snow, and the kind of steep terrain that punishes stiff, over-built shells. We stripped the pant back to what matters: <em>unrestricted movement, instant venting, and a gaiter that actually seals.</em> Every seam placement was validated through 200+ hours of field testing across three seasons.</div>
+      </div>
+    </div>
+
+    <div class="sust-strip reveal reveal-d7">
+      <div class="sust-strip-title">Sustainability Credentials</div>
+      <div class="sust-tags">
+        <span class="sust-tag">Bluesign&#174; Approved</span>
+        <span class="sust-tag">PFC-Free DWR</span>
+        <span class="sust-tag">Recycled Face Fabric</span>
+        <span class="sust-tag">Fair Trade Certified</span>
+      </div>
+    </div>
+
+    <div class="cta-wrap">
+      <button class="cta-btn" id="cta-btn">ADD TO CART &#8212; $349</button>
+      <div class="cta-sub">
+        <span class="cta-sub-item">Free returns · 60 days</span>
+        <span class="cta-sub-sep">|</span>
+        <span class="cta-sub-item">Ships in 1&#8211;2 days</span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ═══ THREE.JS ═══ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var scene, camera, renderer, model, mixer;
+  var isAutoSpin = true, isDragging = false, hasInteracted = false;
+  var previousMouse = { x: 0, y: 0 };
+  var rotationTarget = { x: 0, y: 0 };
+  var currentRotation = { x: 0, y: 0 };
+  var cameraDistance = 3.5;
+  var clock = new THREE.Clock();
+
+  var canvas = document.getElementById('viewer-canvas');
+  var loadingOverlay = document.getElementById('loading-overlay');
+  var loadingBar = document.getElementById('loading-bar');
+  var loadingText = document.getElementById('loading-text');
+  var dragHint = document.getElementById('drag-hint');
+  var statusText = document.getElementById('status-text');
+  var statusDot = document.getElementById('status-dot');
+
+  function initScene() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x262420);
+    camera = new THREE.PerspectiveCamera(35, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.set(0, 1.2, cameraDistance);
+    camera.lookAt(0, 1, 0);
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    setupLighting();
+    var gnd = new THREE.Mesh(new THREE.PlaneGeometry(20,20), new THREE.ShadowMaterial({opacity:0.08}));
+    gnd.rotation.x = -Math.PI/2; gnd.receiveShadow = true; scene.add(gnd);
+    loadModel();
+    window.addEventListener('resize', onResize);
+    onResize();
+  }
+
+  function setupLighting() {
+    var k=new THREE.DirectionalLight(0xffffff,0.9); k.position.set(3,5,4); k.castShadow=true; k.shadow.mapSize.set(1024,1024); k.shadow.bias=-0.001; scene.add(k);
+    scene.add(new THREE.DirectionalLight(0xe8edf2,0.5).translateX(-3).translateY(3).translateZ(2));
+    scene.add(new THREE.DirectionalLight(0xffffff,0.6).translateY(4).translateZ(-4));
+    scene.add(new THREE.DirectionalLight(0xf0f4f8,0.3).translateY(8));
+    scene.add(new THREE.DirectionalLight(0xe0e8f0,0.2).translateX(-5).translateY(2));
+    scene.add(new THREE.DirectionalLight(0xe0e8f0,0.2).translateX(5).translateY(2));
+    scene.add(new THREE.AmbientLight(0xffffff,0.35));
+  }
+
+  function loadModel() {
+    loadingText.textContent='Loading model'; loadingBar.style.width='20%';
+    var loader=new THREE.GLTFLoader(); loadingBar.style.width='40%';
+    loader.load('pant_model.glb', function(gltf) {
+      model=gltf.scene;
+      var box=new THREE.Box3().setFromObject(model);
+      var center=box.getCenter(new THREE.Vector3());
+      var size=box.getSize(new THREE.Vector3());
+      var s=2.5/Math.max(size.x,size.y,size.z);
+      model.scale.setScalar(s);
+      model.position.set(-center.x*s,-box.min.y*s,-center.z*s);
+      model.traverse(function(c){if(c.isMesh){c.castShadow=true;c.receiveShadow=true;}});
+      scene.add(model);
+      if(gltf.animations&&gltf.animations.length){mixer=new THREE.AnimationMixer(model);gltf.animations.forEach(function(clip){mixer.clipAction(clip).play();});}
+      loadingBar.style.width='100%'; loadingText.textContent='Ready';
+      // #16: Update status after load
+      setTimeout(function(){loadingOverlay.classList.add('hidden');setStatus('Auto-rotating',false);},400);
+    }, function(p){if(p.total>0)loadingBar.style.width=(40+p.loaded/p.total*55)+'%';
+    }, function(){
+      createPlaceholderModel();
+      loadingBar.style.width='100%'; loadingText.textContent='Preview mode';
+      setTimeout(function(){loadingOverlay.classList.add('hidden');setStatus('Auto-rotating',false);},400);
+    });
+  }
+
+  function createPlaceholderModel() {
+    var g=new THREE.Group();
+    var sm=new THREE.MeshStandardMaterial({color:0x1a1a1e,roughness:0.75,metalness:0.05});
+    var pm=new THREE.MeshStandardMaterial({color:0x28282e,roughness:0.65,metalness:0.08});
+    function add(geo,mat,x,y,z){var m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;g.add(m);}
+    add(new THREE.CylinderGeometry(0.36,0.40,0.18,24),pm,0,2.42,0);
+    add(new THREE.CylinderGeometry(0.40,0.44,0.25,24),sm,0,2.20,0);
+    add(new THREE.CylinderGeometry(0.44,0.40,0.35,24),sm,0,1.90,0);
+    add(new THREE.BoxGeometry(0.32,0.12,0.22),sm,0,1.67,0);
+    add(new THREE.CylinderGeometry(0.22,0.20,0.7,16),sm,-0.16,1.30,0);
+    add(new THREE.CylinderGeometry(0.22,0.20,0.7,16),sm,0.16,1.30,0);
+    add(new THREE.CylinderGeometry(0.20,0.19,0.35,16),pm,-0.16,0.78,0);
+    add(new THREE.CylinderGeometry(0.20,0.19,0.35,16),pm,0.16,0.78,0);
+    add(new THREE.CylinderGeometry(0.19,0.17,0.7,16),sm,-0.16,0.28,0);
+    add(new THREE.CylinderGeometry(0.19,0.17,0.7,16),sm,0.16,0.28,0);
+    add(new THREE.CylinderGeometry(0.18,0.20,0.18,16),pm,-0.16,-0.15,0);
+    add(new THREE.CylinderGeometry(0.18,0.20,0.18,16),pm,0.16,-0.15,0);
+    model=g; scene.add(model);
+  }
+
+  // ─── Interaction ───
+  function dismissHint(){if(!hasInteracted){hasInteracted=true;dragHint.classList.add('hidden');}}
+  function setStatus(t,a){statusText.textContent=t;statusDot.classList[a?'add':'remove']('active');}
+
+  canvas.addEventListener('pointerdown',function(e){
+    isDragging=true;previousMouse.x=e.clientX;previousMouse.y=e.clientY;
+    canvas.style.cursor='grabbing';dismissHint();setStatus('Dragging',true);
+  });
+  window.addEventListener('pointermove',function(e){
+    if(!isDragging)return;
+    rotationTarget.y+=(e.clientX-previousMouse.x)*0.008;
+    rotationTarget.x+=(e.clientY-previousMouse.y)*0.004;
+    rotationTarget.x=Math.max(-0.5,Math.min(0.5,rotationTarget.x));
+    previousMouse.x=e.clientX;previousMouse.y=e.clientY;
+  });
+  window.addEventListener('pointerup',function(){
+    if(isDragging){isDragging=false;canvas.style.cursor='grab';setStatus(isAutoSpin?'Auto-rotating':'Idle',false);}
+  });
+  var zt;
+  canvas.addEventListener('wheel',function(e){
+    e.preventDefault();
+    cameraDistance+=e.deltaY*0.003;
+    cameraDistance=Math.max(1.8,Math.min(6,cameraDistance));
+    dismissHint();setStatus('Zooming',true);
+    clearTimeout(zt);zt=setTimeout(function(){setStatus(isAutoSpin?'Auto-rotating':'Idle',false);},400);
+  },{passive:false});
+  canvas.style.cursor='grab';
+
+  // #5: Touch pinch-to-zoom
+  var touchStartDist=0, touchStartCamDist=0;
+  canvas.addEventListener('touchstart',function(e){
+    if(e.touches.length===2){
+      e.preventDefault();
+      var dx=e.touches[0].clientX-e.touches[1].clientX;
+      var dy=e.touches[0].clientY-e.touches[1].clientY;
+      touchStartDist=Math.sqrt(dx*dx+dy*dy);
+      touchStartCamDist=cameraDistance;
+      dismissHint();
+    }
+  },{passive:false});
+  canvas.addEventListener('touchmove',function(e){
+    if(e.touches.length===2){
+      e.preventDefault();
+      var dx=e.touches[0].clientX-e.touches[1].clientX;
+      var dy=e.touches[0].clientY-e.touches[1].clientY;
+      var dist=Math.sqrt(dx*dx+dy*dy);
+      var scale=touchStartDist/dist;
+      cameraDistance=Math.max(1.8,Math.min(6,touchStartCamDist*scale));
+      setStatus('Zooming',true);
+    }
+  },{passive:false});
+  canvas.addEventListener('touchend',function(e){
+    if(e.touches.length<2) setStatus(isAutoSpin?'Auto-rotating':'Idle',false);
+  });
+
+  // Keyboard
+  canvas.addEventListener('keydown',function(e){
+    var h=true;
+    switch(e.key){
+      case 'ArrowLeft':rotationTarget.y-=0.15;break;
+      case 'ArrowRight':rotationTarget.y+=0.15;break;
+      case 'ArrowUp':rotationTarget.x=Math.max(-0.5,rotationTarget.x-0.08);break;
+      case 'ArrowDown':rotationTarget.x=Math.min(0.5,rotationTarget.x+0.08);break;
+      case '+':case '=':cameraDistance=Math.max(1.8,cameraDistance-0.3);break;
+      case '-':case '_':cameraDistance=Math.min(6,cameraDistance+0.3);break;
+      case ' ':isAutoSpin=!isAutoSpin;document.getElementById('btn-autospin').textContent=isAutoSpin?'Pause Spin':'Auto Spin';setStatus(isAutoSpin?'Auto-rotating':'Idle',false);break;
+      default:h=false;
+    }
+    if(h){e.preventDefault();dismissHint();}
+  });
+
+  // Render loop
+  function animate(){
+    requestAnimationFrame(animate);
+    var d=clock.getDelta();if(mixer)mixer.update(d);
+    if(isAutoSpin&&!isDragging)rotationTarget.y+=0.003;
+    currentRotation.x+=(rotationTarget.x-currentRotation.x)*0.08;
+    currentRotation.y+=(rotationTarget.y-currentRotation.y)*0.08;
+    camera.position.x=Math.sin(currentRotation.y)*cameraDistance;
+    camera.position.z=Math.cos(currentRotation.y)*cameraDistance;
+    camera.position.y=1.2+currentRotation.x*2;
+    camera.lookAt(0,1,0);
+    renderer.render(scene,camera);
+  }
+  function onResize(){
+    var w=canvas.clientWidth,h=canvas.clientHeight;
+    if(!w||!h)return;
+    camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);
+  }
+  initScene();animate();
+
+  // Controls
+  document.getElementById('btn-reset').addEventListener('click',function(){
+    rotationTarget.x=0;rotationTarget.y=0;cameraDistance=3.5;
+    setStatus('View reset',false);
+    setTimeout(function(){setStatus(isAutoSpin?'Auto-rotating':'Idle',false);},1200);
+  });
+  document.getElementById('btn-autospin').addEventListener('click',function(e){
+    isAutoSpin=!isAutoSpin;e.target.textContent=isAutoSpin?'Pause Spin':'Auto Spin';
+    setStatus(isAutoSpin?'Auto-rotating':'Paused',false);
+  });
+
+  // Still View
+  var angleMap={'front':{y:0,x:0,dist:3.5},'back':{y:Math.PI,x:0,dist:3.5},'side':{y:Math.PI/2,x:0,dist:3.5},'detail-knee':{y:0.3,x:-0.1,dist:2.2},'detail-cuff':{y:0.2,x:-0.3,dist:2.0},'flat-lay':{y:0,x:0.5,dist:4.5}};
+  document.querySelectorAll('.still-angle-card').forEach(function(card){
+    card.addEventListener('click',function(){
+      document.querySelectorAll('.still-angle-card').forEach(function(c){c.classList.remove('active');});
+      card.classList.add('active');
+      var a=angleMap[card.dataset.angle];
+      if(a){switchTab('spin');isAutoSpin=false;document.getElementById('btn-autospin').textContent='Auto Spin';
+        rotationTarget.y=a.y;rotationTarget.x=a.x;cameraDistance=a.dist;
+        setStatus('Angle: '+card.dataset.angle.replace('-',' '),true);
+        setTimeout(function(){setStatus('Paused',false);},1500);
+      }
+    });
+  });
+
+  // #12: Tab switching with cross-fade
+  function switchTab(tab){
+    document.querySelectorAll('.viewer-tab').forEach(function(t){t.classList.remove('active');});
+    document.querySelector('.viewer-tab[data-tab="'+tab+'"]').classList.add('active');
+    // Hide all panels
+    var panels=['panel-spin','panel-still','panel-fit'];
+    panels.forEach(function(id){
+      var el=document.getElementById(id);
+      el.style.opacity='0';
+      setTimeout(function(){
+        el.style.display='none';el.classList.remove('active');
+      },150);
+    });
+    // Show target after brief fade
+    setTimeout(function(){
+      var target=document.getElementById(tab==='spin'?'panel-spin':tab==='still'?'panel-still':'panel-fit');
+      target.style.display='flex';
+      target.classList.add('active');
+      // Force reflow then fade in
+      target.offsetHeight;
+      target.style.opacity='1';
+      if(tab==='spin') setTimeout(onResize,50);
+    },160);
+  }
+  document.querySelectorAll('.viewer-tab').forEach(function(t){t.addEventListener('click',function(){switchTab(t.dataset.tab);});});
+
+  // #1: Hotspot interaction with panel repositioning
+  window.closeAllHotspots=function(){document.querySelectorAll('.hotspot-info').forEach(function(i){i.classList.remove('visible');i.classList.remove('flip-left');i.classList.remove('flip-up');});};
+
+  document.querySelectorAll('.hotspot-info-close').forEach(function(btn){
+    btn.addEventListener('click',function(e){e.stopPropagation();closeAllHotspots();});
+  });
+
+  document.querySelectorAll('.hotspot').forEach(function(h){
+    h.addEventListener('click',function(e){
+      e.stopPropagation();
+      var info=document.getElementById('info-'+h.dataset.hotspot);
+      var wasOpen=info.classList.contains('visible');
+      closeAllHotspots();
+      if(!wasOpen){
+        // Check if panel would overflow right edge
+        var wrap=document.querySelector('.viewer-canvas-wrap');
+        var wrapRect=wrap.getBoundingClientRect();
+        var hotRect=h.getBoundingClientRect();
+        var spaceRight=wrapRect.right-hotRect.right;
+        var spaceBottom=wrapRect.bottom-hotRect.top;
+        if(spaceRight<320) info.classList.add('flip-left');
+        if(spaceBottom<200) info.classList.add('flip-up');
+        info.classList.add('visible');
+      }
+    });
+  });
+  document.addEventListener('click',closeAllHotspots);
+
+  // Selectors
+  document.querySelectorAll('.color-swatch').forEach(function(s){
+    s.addEventListener('click',function(){
+      document.querySelectorAll('.color-swatch').forEach(function(x){x.classList.remove('active');});
+      s.classList.add('active');document.getElementById('color-name').textContent=s.dataset.color;
+    });
+  });
+  document.querySelectorAll('.size-btn').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.size-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');document.getElementById('size-name').textContent=b.dataset.size;
+    });
+  });
+
+  // #3: Size guide link opens fit tab
+  document.getElementById('size-guide-link').addEventListener('click',function(){
+    switchTab('fit');
+  });
+
+  // CTA
+  var ctaBtn=document.getElementById('cta-btn'),cartEl=document.getElementById('cart-count'),cartNum=0;
+  ctaBtn.addEventListener('click',function(){
+    if(ctaBtn.classList.contains('added'))return;
+    ctaBtn.classList.add('added');ctaBtn.textContent='ADDED TO CART \u2713';
+    cartNum++;cartEl.textContent=cartNum;
+    cartEl.classList.add('bump');setTimeout(function(){cartEl.classList.remove('bump');},300);
+    setTimeout(function(){ctaBtn.classList.remove('added');ctaBtn.textContent='ADD TO CART \u2014 $349';},2200);
+  });
+
+  // How to measure
+  document.getElementById('how-to-toggle').addEventListener('click',function(){
+    this.classList.toggle('open');document.getElementById('how-to-content').classList.toggle('open');
+  });
+
+  // #2: Fit Checker with inline validation + #13: loading state
+  var sizeChart=[
+    {label:'XS',waist:[26,28],hips:[32,34],inseam:[30,32],thigh:[18,20]},
+    {label:'S',waist:[28,30],hips:[34,36],inseam:[30,32],thigh:[20,22]},
+    {label:'M',waist:[30,33],hips:[36,39],inseam:[31,33],thigh:[21,23]},
+    {label:'L',waist:[33,36],hips:[39,42],inseam:[32,34],thigh:[23,25]},
+    {label:'XL',waist:[36,40],hips:[42,46],inseam:[32,34],thigh:[25,27]},
+    {label:'XXL',waist:[40,44],hips:[46,50],inseam:[33,35],thigh:[27,30]}
+  ];
+  var zoneColors={ideal:'#2d6a3f',good:'#5a8f4a',tight:'#c4842d',poor:'#a33b2e'};
+  function getFitZone(v,r){var mid=(r[0]+r[1])/2,half=(r[1]-r[0])/2,ratio=Math.abs(v-mid)/half;if(ratio<=0.5)return'ideal';if(ratio<=1.0)return'good';if(ratio<=1.5)return'tight';return'poor';}
+  function colorZone(id,zone){var el=document.getElementById(id);el.setAttribute('fill',zoneColors[zone]);el.setAttribute('fill-opacity','0.3');el.setAttribute('stroke',zoneColors[zone]);}
+
+  var fitBtn=document.getElementById('fit-run');
+  var fitError=document.getElementById('fit-error');
+  var fitFields=['fit-waist','fit-hips','fit-inseam','fit-thigh'];
+  var fitRows=['row-waist','row-hips','row-inseam','row-thigh'];
+
+  fitBtn.addEventListener('click',function(){
+    // Clear previous errors
+    fitError.classList.remove('visible');
+    fitRows.forEach(function(id){document.getElementById(id).classList.remove('error');});
+
+    var vals={};
+    var hasError=false;
+    fitFields.forEach(function(id,i){
+      var v=parseFloat(document.getElementById(id).value);
+      var min=parseFloat(document.getElementById(id).min);
+      var max=parseFloat(document.getElementById(id).max);
+      if(!v||v<min||v>max){
+        document.getElementById(fitRows[i]).classList.add('error');
+        hasError=true;
+      }
+      vals[id.replace('fit-','')]=v;
+    });
+
+    if(hasError){
+      fitError.textContent='Please enter valid measurements for all fields';
+      fitError.classList.add('visible');
+      return;
+    }
+
+    // #13: Loading state
+    fitBtn.classList.add('analyzing');
+    fitBtn.textContent='Analyzing...';
+
+    setTimeout(function(){
+      fitBtn.classList.remove('analyzing');
+      fitBtn.textContent='Analyze Fit';
+
+      var best=null,bestS=Infinity;
+      sizeChart.forEach(function(sz){
+        var sc=Math.abs(vals.waist-(sz.waist[0]+sz.waist[1])/2)+Math.abs(vals.hips-(sz.hips[0]+sz.hips[1])/2)+Math.abs(vals.inseam-(sz.inseam[0]+sz.inseam[1])/2)+Math.abs(vals.thigh-(sz.thigh[0]+sz.thigh[1])/2);
+        if(sc<bestS){bestS=sc;best=sz;}
+      });
+
+      var zones={waist:getFitZone(vals.waist,best.waist),hips:getFitZone(vals.hips,best.hips),thigh:getFitZone(vals.thigh,best.thigh),inseam:getFitZone(vals.inseam,best.inseam)};
+      colorZone('bm-waist',zones.waist);colorZone('bm-hips',zones.hips);
+      colorZone('bm-thigh-l',zones.thigh);colorZone('bm-thigh-r',zones.thigh);
+      colorZone('bm-lower-l',zones.inseam);colorZone('bm-lower-r',zones.inseam);
+
+      document.getElementById('fit-legend').classList.add('visible');
+      document.getElementById('fit-verdict').classList.add('visible');
+      document.getElementById('fit-size').textContent=best.label;
+
+      var allIdeal=Object.values(zones).every(function(z){return z==='ideal';});
+      var anyPoor=Object.values(zones).some(function(z){return z==='poor';});
+      document.getElementById('fit-note').textContent=allIdeal?'Perfect fit across all zones. True to size.':anyPoor?'Consider sizing up \u2014 some zones may run tight with base layers.':'Good fit for athletic cut. Room for mid-weight base layer.';
+
+      document.querySelectorAll('.size-btn').forEach(function(b){b.classList.remove('active');if(b.dataset.size===best.label)b.classList.add('active');});
+      document.getElementById('size-name').textContent=best.label;
+    },350);
+  });
+
+  // Scroll Reveal
+  var revs=document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.15,root:document.getElementById('product-panel')});
+    revs.forEach(function(el){obs.observe(el);});
+  }else{revs.forEach(function(el){el.classList.add('visible');});}
+
+})();
+</script>
+</body>
+</html>
